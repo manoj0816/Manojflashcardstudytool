@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📘 Flashcard App</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+
+    
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1><i class="fas fa-layer-group"></i> Flashcard App</h1>
+            <p>Learn better. Remember longer. Study smarter.</p>
+
+            <button class="btn icon-btn" id="toggle-theme-btn" title="Toggle Dark Mode">
+  <i class="fas fa-moon"></i>
+</button>
+
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Home View (Deck List) -->
+            <div class="view" id="home-view">
+                <div class="controls">
+                    <button id="create-deck-btn" class="btn primary">
+                        <i class="fas fa-plus"></i> Create New Deck
+                    </button>
+                    <div class="search-box">
+                        <input type="text" id="search-decks" placeholder="Search decks...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                <div class="decks-container" id="decks-container">
+                    <!-- Decks will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Create/Edit Deck View -->
+            <div class="view" id="edit-deck-view" style="display: none;">
+                <div class="edit-deck-header">
+                    <button class="btn back-btn" id="back-to-home">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <h2 id="edit-deck-title">Create New Deck</h2>
+                </div>
+                <div class="deck-form">
+                    <div class="form-group">
+                        <label for="deck-name">Deck Name</label>
+                        <input type="text" id="deck-name" placeholder="Enter deck name">
+                    </div>
+                    <div class="form-group">
+                        <label for="deck-description">Description (optional)</label>
+                        <textarea id="deck-description" placeholder="Enter description"></textarea>
+                    </div>
+                    <h3>Flashcards</h3>
+                    <div class="flashcards-list" id="flashcards-list">
+                        <!-- Flashcards will be added here -->
+                    </div>
+                    <button class="btn secondary" id="add-flashcard-btn">
+                        <i class="fas fa-plus"></i> Add Flashcard
+                    </button>
+                    <div class="form-actions">
+                        <button class="btn danger" id="cancel-deck-btn">Cancel</button>
+                        <button class="btn primary" id="save-deck-btn">Save Deck</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Study View -->
+            <div class="view" id="study-view" style="display: none;">
+                <div class="study-header">
+                    <button class="btn back-btn" id="back-from-study">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <h2 id="study-deck-name">Deck Name</h2>
+                    <div class="progress">
+                        <span id="current-card">1</span> of <span id="total-cards">0</span>
+                    </div>
+                </div>
+                <div class="flashcard-container">
+                    <div class="flashcard" id="study-flashcard">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-front">
+                                <div class="flashcard-content">
+                                    <p id="card-question">Click to flip</p>
+                                </div>
+                                <div class="flashcard-footer">
+                                    <span>Click or tap to flip</span>
+                                </div>
+                            </div>
+                            <div class="flashcard-back">
+                                <div class="flashcard-content">
+                                    <p id="card-answer">Answer will appear here</p>
+                                </div>
+                                <div class="flashcard-footer">
+                                    <span>Click or tap to flip</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="study-controls">
+                    <button class="btn secondary" id="prev-card-btn">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="btn primary" id="next-card-btn">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+
+                    
+
+                    <input type="file" id="import-pdf-file" accept="application/pdf" style="display:none;">
+<button class="btn" id="import-pdf-btn">📄 Import PDF</button>
+
+<button class="btn" id="export-btn">💾 Export</button>
+
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Created by Manoj Kumar</p>
+            <div class="social-links">
+                <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" title="Portfolio"><i class="fas fa-globe"></i></a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Flashcard Template (Hidden) -->
+    <template id="flashcard-template">
+        <div class="flashcard-item">
+            <div class="flashcard-item-header">
+                <span class="flashcard-number">Card #1</span>
+                <button class="btn icon-btn delete-flashcard-btn">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="flashcard-item-content">
+                <div class="form-group">
+                    <label>Question</label>
+                    <textarea class="flashcard-question" placeholder="Enter question"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Answer</label>
+                    <textarea class="flashcard-answer" placeholder="Enter answer"></textarea>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Deck Template (Hidden) -->
+    <template id="deck-template">
+        <div class="deck">
+            <div class="deck-header">
+                <h3 class="deck-name">Deck Name</h3>
+                <span class="deck-card-count">0 cards</span>
+            </div>
+            <div class="deck-description">No description</div>
+            <div class="deck-actions">
+                <button class="btn primary study-deck-btn">
+                    <i class="fas fa-book-open"></i> Study
+                </button>
+                <button class="btn secondary edit-deck-btn">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="btn icon-btn delete-deck-btn">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </template>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script src="script.js"></script>
+</body>
+</html>
